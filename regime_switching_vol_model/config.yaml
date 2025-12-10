@@ -1,0 +1,43 @@
+project:
+  name: "Regime-Switching Volatility Model with Hamilton Filtering"
+  seed: 42
+
+data:
+  price_file: "data/sp500_prices.csv"   # daily prices; will be converted to log returns
+  date_column: "date"
+  price_column: "close"
+  # If you already have returns, set use_log_returns: false and change column name below
+  use_log_returns: true
+  returns_column: "log_return"
+  min_history_years: 10
+
+model:
+  n_regimes: 2
+  # Initial transition probabilities (p, q in the description)
+  init_transition:
+    p11: 0.95
+    p22: 0.95
+  # Bounds for MLE optimization in parameter space
+  bounds:
+    mu_low: -0.5
+    mu_high: 0.5
+    log10_sigma_low: -3.0
+    log10_sigma_high: 0.0
+    logit_low: -4.0
+    logit_high: 4.0
+
+optimization:
+  method: "L-BFGS-B"
+  max_iter: 500
+  tol: 1e-6
+
+options_pricing:
+  risk_free_rate: 0.02
+  dividend_yield: 0.0
+  maturity_years: 0.25
+  strike_moneyness: 1.0   # ATM: K = moneyness * S0
+
+output:
+  results_dir: "results"
+  save_plots: true
+  save_model_summary: true
